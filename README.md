@@ -1,5 +1,3 @@
-# nirvanac
-Computation for Women in Numbers Europe 3 project
 In this repository an explicit proof that the invariants:
 I3 = ABC
 I3'= A(a^2-4BC) + B(b^2-4AC) + C(c^2-4AB)
