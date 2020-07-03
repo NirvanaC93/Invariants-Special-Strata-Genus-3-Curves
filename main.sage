@@ -1,5 +1,28 @@
 class OurCurves(object):
+    """
+    Creates a curve of the family
+
+    .. MATH::
+    
+        A*x^4 + B*y^4 + C*z^4 + a*y^2*z^2 + b*x^2*z^2 + c*x^2*y^2
+
+    INPUT:
+
+    -  ``elt`` - A list of length 6 with the coeficients [A,B,C,a,b,c] or
+            a polynomial A*x^4 + B*y^4 + C*z^4 + a*y^2*z^2 + b*x^2*z^2 + c*x^2*y^2
+
+    EXAMPLES::
+
+        sage: C = OurCurves([7,7,7,7,7,1]); C
+        Curve over Rational Field defined by 7*x^4 + x^2*y^2 + 7*y^4 + 7*x^2*z^2 + 7*y^2*z^2 + 7*z^4
+
+        sage: R.<x,y,z> = PolynomialRing(QQ)
+        sage: F = 7*x^4 + 7*y^4 + 7*z^4 + 7*y^2*z^2 + 7*x^2*z^2 + x^2*y^2
+        sage: D = OurCurves(F); D
+        Curve over Rational Field defined by 7*x^4 + x^2*y^2 + 7*y^4 + 7*x^2*z^2 + 7*y^2*z^2 + 7*z^4
+    """
     def __init__(self, elt):
+        from sage.rings.polynomial.multi_polynomial_element import is_MPolynomial
         self._normalized = {}
         self._normalization = {}
         self._reduction_type = {}
@@ -12,7 +35,7 @@ class OurCurves(object):
             self._equation = A*x^4 + B*y^4 + C*z^4 + a*y^2*z^2 + b*x^2*z^2 + c*x^2*y^2
             self._coeffs = {'A':A, 'B':B, 'C':C, 'a':a, 'b':b, 'c':c}
             self._K = K
-        else: #given elt ins an equation
+        elif is_MPolynomial(elt): #given elt is an equation
             R = elt.parent()
             K = R.base_ring()
             K = K.fraction_field()
@@ -26,21 +49,59 @@ class OurCurves(object):
             self._equation = elt
             self._coeffs = {'A':A, 'B':B, 'C':C, 'a':a, 'b':b, 'c':c}
             self._K = K
+        else:
+            raise TypeError("Argument (=%s) must be a list or a polynomial."%T)
+
+    def defining_polynomial(self):
+        """
+        Return the defining polynomial of the curve.
+        """
+        return self._equation
 
     def __repr__(self):
-        return str(self._equation)
+        """
+        Return a string representation of this curve.
+        """
+        return "Curve over {} defined by {}".format(self._K,
+                 self._equation)
 
     def conic(self):
+        """
+        Return the equation of the conic obtained by quotiening the curve
+        by the Klein group.
+
+        EXAMPLES::
+
+            sage: C = OurCurves([7,7,7,7,7,1]); C
+            sage: C.conic()
+            Projective Conic Curve over Rational Field defined by 7*u^2 + u*v + 7*v^2 + 7*u*w + 7*v*w + 7*w^2
+        """
         try:
             return self._conic
         except AttributeError:
-            K = self.K
+            K = self._K
             R.<u,v,w> = PolynomialRing(K)
-            self._conic = A*u^2 + B*v^2 + C*w^2 + a*v*w + b*u*w + c*u*v
+            A = self._coeffs['A']
+            B = self._coeffs['B']
+            C = self._coeffs['C']
+            a = self._coeffs['a']
+            b = self._coeffs['b']
+            c = self._coeffs['c']
+            self._conic = Conic(A*u^2 + B*v^2 + C*w^2 + a*v*w + b*u*w + c*u*v)
             return self._conic
 
     def invariants(self):
-        ## Compute the invariants of the given model
+        """
+        Return the projective invariants I_3, I'_3 I''_3, I_6 and I of the curve
+        as defined in our paper. The invariants have weight 3, 3, 3, 6 and 6
+        respectively.
+
+        EXAMPLES::
+
+            sage: C = OurCurves([7,7,7,7,7,1]); C
+            sage: C.invariants()
+            [343, -3423, -728, -4213755, 3868011]
+        """
         try:
             return self._invariants
         except AttributeError:
@@ -61,8 +122,36 @@ class OurCurves(object):
             self._invariants = [I3, II3, III3, I6, I]
             return self._invariants
 
+    def discriminant(self):
+        """
+        Return the discriminant of the curve.
+
+        EXAMPLES::
+
+            sage: C = OurCurves([7,7,7,7,7,1]); C
+            sage: C.disctiminant()
+            -417636311076891767890575/256
+        """
+        [I3, II3, III3, I6, I] = self.invariants()
+        return -2^(-20)*I3*III3^4*I6^2
+    
     def is_normalized(self, p):
-        ##return if the given model is normalized wrt the valuation associated to p as defined in Prop 3.1
+        """
+        Return whether the curve is normalized with respect to ``p``, as defined
+        in Proposition 3.1 of the paper.
+
+        INPUT:
+
+        -  ``p`` - the prime (different from 2) determining the valuation.
+
+        EXAMPLES::
+
+            sage: C = OurCurves([7,7,7,7,7,1]); C
+            sage: C.is_normalized(7)
+            False
+        """
+        if p == 2:
+            raise NotImplementedError
         try:
             return self._normalized[p]
         except KeyError:
@@ -82,8 +171,23 @@ class OurCurves(object):
             return True
     
     def normalized_model(self, p):
-        ##given a model of the curve, returns an isomorphic model that is normalized wrt the valuation
-        # associated to p as defined in Prop 3.1
+        """
+        Return a normalized model of the curve that is normalized with respect
+        to ``p``, as defined in Proposition 3.1 of the paper.
+
+        INPUT:
+
+        -  ``p`` - the prime (different from 2) determining the valuation.
+
+        EXAMPLES::
+
+            sage: C = OurCurves([7,7,7,7,7,1]); C
+            sage: C.normalized_model(7)
+            Curve over Number Field in m with defining polynomial X^4 - 7
+              defined by 7*x^4 + x^2*y^2 + 7*y^4 + (m^2)*x^2*z^2 + (m^2)*y^2*z^2 + z^4
+        """
+        if p == 2:
+            raise NotImplementedError
         if self.is_normalized(p):
             return self
         else:
@@ -103,13 +207,16 @@ class OurCurves(object):
                         try:
                             elt = v.element_with_valuation(r)
                         except ValueError:
-                            P.<X> = PolynomialRing(p.parent())
+                            P.<X> = PolynomialRing(K)
                             den = r.denominator()
-                            K.<m> = K.extension(X^den - p, 'aux').absolute_field()
+                            poly = X^den - p
+                            poly2, _ = poly.factor()[0]
+                            K.<m> = K.extension(poly2, 'aux').absolute_field()
                             v = K.valuation(p)
                             elt = v.element_with_valuation(r)
-                        var[L[-1]] /= elt
-                        F = F(var)
+                        R = F.parent().change_ring(K)
+                        var[L[-1]] = R(var[L[-1]])/elt
+                        F = R(F)(var)
                         D = coeffs(F)
                         assert not all(map(lambda i : v(D[i])  > 0, L[:-1]))
                 for L in [['A', 'B', 'c', 2], ['A', 'b', 'C', 1], ['a', 'B', 'C', 0]]:
@@ -121,31 +228,49 @@ class OurCurves(object):
                         try:
                             elt = v.element_with_valuation(r)
                         except ValueError:
+                            P.<X> = PolynomialRing(K)
                             den = r.denominator()
-                            K.<m> = K.extension(X^den - p, 'aux').absolute_field()
+                            poly = X^den - p
+                            poly2, _ = poly.factor()[0]
+                            K.<m> = K.extension(poly2, 'aux').absolute_field()
                             v = K.valuation(p)
                             elt = v.element_with_valuation(r)
+                        R = F.parent().change_ring(K)
                         for i in range(3):
                             if i == L[-1]:
-                                var[i] *= elt
+                                var[i] = elt*R(var[i])
                             else:
-                                var[i] /= elt
-                        F = F(var)
-                        [A,B,C,a,b,c] = coeffs(F)
-                        print(L)
+                                var[i] = R(var[i])/elt
+                        F = R(F)(var)
+                        D = coeffs(F)
                         assert not all(map(lambda i : v(D[i])  > 0, L[:-1]))
                 self._normalization[p] = OurCurves(F)
                 return self._normalization[p]
 
     def reduction_type(self, p):
-        ##Using the decisional tree, compute the reduction type of the curve, and return the corresponding
+        """
+        Return the reduction type of the curve with respect to ``p``,
+        using the decision tree in the repository.
+
+        INPUT:
+
+        -  ``p`` - the prime (different from 2) determining the valuation.
+
+        EXAMPLES::
+
+            sage: C = OurCurves([7,7,7,7,7,1]); C
+            sage: C.reduction_type(7)
+            '3.8 (f.iii)'
+        """
+        if p == 2:
+            raise NotImplementedError
         try:
             return self._reduction_type[p]
         except KeyError:
             [I3, II3, III3, I6, I] = self.invariants()
             K = self._K
             v = K.valuation(p)
-            L = [v(I3/II3), v(II3/III3), v(I6/III3^2)]
+            L = [v(I3/III3), v(II3/III3), v(I6/III3^2)]
             if min(L)>=0:
                 if L[2] == 0:
                     if L[0] == 0:
@@ -207,7 +332,7 @@ class OurCurves(object):
                         elif y > 0:
                             return "3.9 (b.i)"
                         else:
-                            return "3.0 (b.ii)"
+                            return "3.9 (b.ii)"
                     else:
                         return "3.9 (a)"
                 elif x > 0:
@@ -216,10 +341,10 @@ class OurCurves(object):
                         if N[1] == 0:
                             return "3.9 (c.i)"
                         else:
-                            if v((II3^2 - 16*I2*III3)/(I3*III3)) == 0:
-                                return "3.9 (c.iii)"
-                            else:
+                            if v((II3^2 - 16*I3*III3)/(I3*III3)) == 0:
                                 return "3.9 (c.ii)"
+                            else:
+                                return "3.9 (c.iii)"
                     else:
                         if v((I6*I3)/II3^3) > 0:
                             y = v((I6*I3)/(I3*II3*III3))
