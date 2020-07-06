@@ -299,21 +299,21 @@ class OurCurves(object):
                             return "3.8 (e)"
                         else:
                             if v(I^2/(I6*I3*III3)) > 0:
-                                x = v(I6/(I3*II3))
+                                x = v((I3*II3)/I6)
                                 if x == 0:
                                     return "3.8 (f.iii)"
-                                elif x > 0:
+                                elif x < 0:
                                     return "3.8 (f.i)"
                                 else:
                                     return "3.8 (f.ii)"
                             else:
-                                x = v(I6/I)
+                                x = v(I/I6)
                                 if x == 0:
                                     if v(I/(I3*III3)) == 0:
                                         return "3.8 (f.iii)"
-                                    else: #TODO check that this is only negative
+                                    else:
                                         return "3.8 (f.vi)"
-                                elif x > 0:
+                                elif x < 0:
                                     y = v(I/(I3*III3))
                                     if y == 0:
                                         return "3.8 (f.v)"
@@ -327,11 +327,11 @@ class OurCurves(object):
                 M = [v(II3/I3), v(III3/I3), v(I6/I3^2), v(I/I3^2)]
                 x = min(M)
                 if x == 0:
-                    if v(I6/I)>0:
-                        y = v(I6/(III3*min(I3,II3)))
+                    if v(I/I6) < 0:
+                        y = min(v((III3*I3)/I6), v((III3*II3)/I6))
                         if y == 0:
                             return "3.9 (b.iii)"
-                        elif y > 0:
+                        elif y < 0:
                             return "3.9 (b.i)"
                         else:
                             return "3.9 (b.ii)"
@@ -348,26 +348,26 @@ class OurCurves(object):
                             else:
                                 return "3.9 (c.iii)"
                     else:
-                        if v((I6*I3)/II3^3) > 0:
-                            y = v((I6*I3)/(I3*II3*III3))
+                        if v(II3^3/(I6*I3)) < 0:
+                            y = v((I3*II3*III3)/(I6*I3))
                             if y == 0:
                                 return "3.9 (c.vii)"
-                            elif y > 0:
+                            elif y < 0:
                                 return "3.9 (c.v)"
                             else:
                                 return "3.9 (c.vi)"
                         else:
                             return "3.9 (c.iv)"
                 else:
-                    z = v(I/II3^2)
+                    z = v(I) - 2*v(II3)
                     if z == 0:
-                        if v(I6/I) == 0:
+                        if v(I/I6) == 0:
                             return "3.9 (d)"
                         else:
-                            y = v(I6/(III3*(I3+II3)))
+                            y = min(v((III3*I3)/I6), v((III3*II3)/I6))
                             if y == 0:
                                 return "3.9 (b.iii)"
-                            elif y > 0:
+                            elif y < 0:
                                 return "3.9 (b.i)"
                             else:
                                 return "3.9 (b.ii)"
