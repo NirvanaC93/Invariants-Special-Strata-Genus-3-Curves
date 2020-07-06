@@ -223,7 +223,6 @@ class OurCurves(object):
                     if all(map(lambda i : v(D[i]) > 0, L[:-1])):
                         var = list(F.parent().gens())
                         val = list(map(lambda i : v(D[i])/4, L[:-1]))
-                        val[L[-1]] *= 2
                         r = min(val)
                         try:
                             elt = v.element_with_valuation(r)
@@ -243,6 +242,7 @@ class OurCurves(object):
                                 var[i] = R(var[i])/elt
                         F = R(F)(var)
                         D = coeffs(F)
+                        print(F)
                         assert not all(map(lambda i : v(D[i])  > 0, L[:-1]))
                 self._normalization[p] = OurCurves(F)
                 return self._normalization[p]
@@ -264,6 +264,8 @@ class OurCurves(object):
         """
         if p == 2:
             raise NotImplementedError
+        if C.discriminant() == 0:
+            raise ValueError("The curve is singular.")
         try:
             return self._reduction_type[p]
         except KeyError:
@@ -276,13 +278,13 @@ class OurCurves(object):
                     if L[0] == 0:
                         return "Good reduction"
                     else:
-                        if L[1] == 0:
-                            if v(I/III3^2) == 0:
-                                return "3.8 (d)"
-                            else:
-                                return "3.8 (g)"
+                        if v(I/III3^2) == 0:
+                            return "3.8 (d)"
                         else:
-                            return "3.8 (h)"
+                            if L[1] == 0:
+                                return "3.8 (g)"
+                            else:
+                                return "3.8 (h)"
                 else:
                     if L[0] == 0:
                         if v(I/III3^2) == 0:
@@ -326,7 +328,7 @@ class OurCurves(object):
                 x = min(M)
                 if x == 0:
                     if v(I6/I)>0:
-                        y = v(I6/(III3*(I3+II3)))
+                        y = v(I6/(III3*min(I3,II3)))
                         if y == 0:
                             return "3.9 (b.iii)"
                         elif y > 0:

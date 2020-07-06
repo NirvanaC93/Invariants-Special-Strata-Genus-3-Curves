@@ -2,7 +2,7 @@
 ### Complementary material
 
 In this repository we give extra material to complement the paper
-> _Reduction types of genus-3 curves in a special stratum of their moduli space_, I. Bouw, N. Coppola, P. Kiliçer, S. Kunzweiler,
+> [_Reduction types of genus-3 curves in a special stratum of their moduli space_](https://arxiv.org/abs/2003.07633), I. Bouw, N. Coppola, P. Kiliçer, S. Kunzweiler,
 E. Lorenzo García and A. Somoza.
 
 #### Proof of Proposition 3.4 in characteristic 0.
