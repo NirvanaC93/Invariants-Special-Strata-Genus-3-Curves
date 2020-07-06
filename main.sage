@@ -264,7 +264,7 @@ class OurCurves(object):
         """
         if p == 2:
             raise NotImplementedError
-        if C.discriminant() == 0:
+        if self.discriminant() == 0:
             raise ValueError("The curve is singular.")
         try:
             return self._reduction_type[p]
