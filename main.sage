@@ -279,50 +279,50 @@ class OurCurves(object):
                         return "Good reduction"
                     else:
                         if v(I/III3^2) == 0:
-                            return "3.8 (d)"
+                            return "Theorem 2 (d)"
                         else:
                             if L[1] == 0:
-                                return "3.8 (g)"
+                                return "Theorem 2 (g)"
                             else:
-                                return "3.8 (h)"
+                                return "Theorem 2 (h)"
                 else:
                     if L[0] == 0:
                         if v(I/III3^2) == 0:
-                            return "3.8 (a)"
+                            return "Theorem 2 (a)"
                         else:
                             if L[1] == 0:
-                                return "3.8 (b)"
+                                return "Theorem 2 (b)"
                             else:
-                                return "3.8 (c)"
+                                return "Theorem 2 (c)"
                     else:
                         if v(I/III3^2) == 0:
-                            return "3.8 (e)"
+                            return "Theorem 2 (e)"
                         else:
                             if v(I^2/(I6*I3*III3)) > 0:
                                 x = v((I3*II3)/I6)
                                 if x == 0:
-                                    return "3.8 (f.iii)"
+                                    return "Theorem 2 (f.iii)"
                                 elif x < 0:
-                                    return "3.8 (f.i)"
+                                    return "Theorem 2 (f.i)"
                                 else:
-                                    return "3.8 (f.ii)"
+                                    return "Theorem 2 (f.ii)"
                             else:
                                 x = v(I/I6)
                                 if x == 0:
                                     if v(I/(I3*III3)) == 0:
-                                        return "3.8 (f.iii)"
+                                        return "Theorem 2 (f.iii)"
                                     else:
-                                        return "3.8 (f.vi)"
+                                        return "Theorem 2 (f.vi)"
                                 elif x < 0:
                                     y = v(I/(I3*III3))
                                     if y == 0:
-                                        return "3.8 (f.v)"
+                                        return "Theorem 2 (f.v)"
                                     elif y > 0:
-                                        return "3.8 (f.i)"
+                                        return "Theorem 2 (f.i)"
                                     else:
-                                        return "3.8 (f.iv)"
+                                        return "Theorem 2 (f.iv)"
                                 else:
-                                    return "3.8 (f.ii)"
+                                    return "Theorem 2 (f.ii)"
             else:
                 M = [v(II3/I3), v(III3/I3), v(I6/I3^2), v(I/I3^2)]
                 x = min(M)
@@ -330,51 +330,51 @@ class OurCurves(object):
                     if v(I/I6) < 0:
                         y = min(v((III3*I3)/I6), v((III3*II3)/I6))
                         if y == 0:
-                            return "3.9 (b.iii)"
+                            return "Theorem 3 (b.iii)"
                         elif y < 0:
-                            return "3.9 (b.i)"
+                            return "Theorem 3 (b.i)"
                         else:
-                            return "3.9 (b.ii)"
+                            return "Theorem 3 (b.ii)"
                     else:
-                        return "3.9 (a)"
+                        return "Theorem 3 (a)"
                 elif x > 0:
                     N = [v(II3^2/(I3*III3)), v(I6^2/(I3*III3^3))]
                     if min(N) >= 0:
                         if N[1] == 0:
-                            return "3.9 (c.i)"
+                            return "Theorem 3 (c.i)"
                         else:
                             if v((II3^2 - 16*I3*III3)/(I3*III3)) == 0:
-                                return "3.9 (c.ii)"
+                                return "Theorem 3 (c.ii)"
                             else:
-                                return "3.9 (c.iii)"
+                                return "Theorem 3 (c.iii)"
                     else:
                         if v(II3^3/(I6*I3)) < 0:
                             y = v((I3*II3*III3)/(I6*I3))
                             if y == 0:
-                                return "3.9 (c.vii)"
+                                return "Theorem 3 (c.vii)"
                             elif y < 0:
-                                return "3.9 (c.v)"
+                                return "Theorem 3 (c.v)"
                             else:
-                                return "3.9 (c.vi)"
+                                return "Theorem 3 (c.vi)"
                         else:
-                            return "3.9 (c.iv)"
+                            return "Theorem 3 (c.iv)"
                 else:
                     z = v(I) - 2*v(II3)
                     if z == 0:
                         if v(I/I6) == 0:
-                            return "3.9 (d)"
+                            return "Theorem 3 (d)"
                         else:
                             y = min(v((III3*I3)/I6), v((III3*II3)/I6))
                             if y == 0:
-                                return "3.9 (b.iii)"
+                                return "Theorem 3 (b.iii)"
                             elif y < 0:
-                                return "3.9 (b.i)"
+                                return "Theorem 3 (b.i)"
                             else:
-                                return "3.9 (b.ii)"
+                                return "Theorem 3 (b.ii)"
                     elif z > 0:
-                        return "3.9 (e)"
+                        return "Theorem 3 (e)"
                     else:
-                        return "3.9 (d)"
+                        return "Theorem 3 (d)"
             return "Error"
     
 def coeffs(elt):
