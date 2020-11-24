@@ -133,7 +133,7 @@ class OurCurves(object):
             -417636311076891767890575/256
         """
         [I3, II3, III3, I6, I] = self.invariants()
-        return -2^(-20)*I3*III3^4*I6^2
+        return 2^(20)*I3*III3^4*I6^2
     
     def is_normalized(self, p):
         """
